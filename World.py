@@ -37,8 +37,11 @@ class World():
                 print(self.matrix[x, y], end=' ')
             print()
     
-    def kill(self, height: int, width: int) -> None:
-        for x in range(height):
-            for y in range(width):
-                if self.matrix[x,y] == self.ids['agent']:
-                    self.matrix[x,y] = self.ids['empty']
+    def kill(self, x_start : int, y_start : int, x_end : int, y_end : int) -> int:
+        num_killed : int = 0
+        for x in range(x_start, x_end):
+            for y in range(y_start, y_end):
+                if self.matrix[x, y] == self.ids['agent']:
+                    num_killed += 1
+                    self.matrix[x, y] = self.ids['empty']
+        return num_killed
