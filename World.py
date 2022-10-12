@@ -13,6 +13,8 @@ class World():
         'wall' : 2
     }
     
+    age : int = 0
+    
     # Initialize a world with a specified size.
     # Unsure if the population should also be taken in here or if it should be segregated.
     def __init__(self, width : int, height : int) -> None:
@@ -21,15 +23,18 @@ class World():
         
         self.matrix = np.zeros(shape=(width, height), dtype=int)
     
-    # Check if the cell at a given coordinate is empty.
-    def cell_empty(self, x : int, y : int) -> bool:
+    def check_cell(self, x : int, y : int) -> int:
         # If a cell is out of bounds, it is treated as occupied.
         # Why? Because it's easier than doing anything else.
         if (x >= self.width or x < 0) or (y >= self.height or y < 0):
-            return False
+            return self.ids['wall']
         
         # Otherwise, return whether or not the cell is actually empty.
-        return self.matrix[x, y] == self.ids['empty']
+        return self.matrix[x, y]
+    
+    # Check if the cell at a given coordinate is empty.
+    def cell_empty(self, x : int, y : int) -> bool:
+        return self.check_cell(x, y) == self.ids['empty']
     
     def print_matrix(self) -> None:
         for y in range(self.height):

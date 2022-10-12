@@ -1,4 +1,5 @@
 from World import World
+from Brain import *
 import random as r
 
 # Class that represents the individuals populating the world.
@@ -9,11 +10,14 @@ class LittleGuy():
     # The world that this individual lives in.
     _world : World
     
+    brain : Network = None
+    
     # Forward vector; the last direction that this individual moved in.
     _forward : tuple[int, int] = (0, 0)
     
     def __init__(self, world : World) -> None:
         self._world = world
+        self.brain = None
     
     def place_radomly(self) -> None:
         # Randomly distribute this individual within the world.
@@ -29,9 +33,20 @@ class LittleGuy():
         # Set the individual to that coordinate and update the matrix accordingly.
         self.set_coordinates(x, y)
         self._world.matrix[x, y] = self._world.ids['agent']
+        
+        self._forward = (r.choice([-1, 0, 1]), r.choice([-1, 0, 1]))
+        if self._forward == (0, 0):
+            if r.choice([0, 1]) == 0:
+                self._forward = (self._forward[0], r.choice([-1, 1]))
+            else:
+                self._forward = (r.choice([-1, 1]), self._forward[1])
     
     # Move this individual to a specific place in the world.
     def set_coordinates(self, x : int, y : int) -> bool:
+        # Don't move to any out of bounds cells.
+        if x >= self._world.width or x < 0 or y >= self._world.height or y < 0:
+            return False
+        
         # Check if the target cell is unoccupied.
         # If there is already something there, then stop.
         if not self._world.cell_empty(x, y):
@@ -52,6 +67,33 @@ class LittleGuy():
         self._world.matrix[self._x, self._y] = self._world.ids['agent']
         
         return True
+    
+    
+    #################################################################################################################################################
+    # INPUT BEHAVIORS
+    #################################################################################################################################################
+    
+    def pos_x(self) -> float:
+        return self._x / self._world.width
+    def pos_y(self) -> float:
+        return self._y / self._world.height
+    
+    def rand(self) -> float:
+        return r.random() * 2 - 1
+    
+    def check_time(self) -> int:
+        return self._world.age
+    
+    def check_forward(self) -> int:
+        return self._world.check_cell(self._x + self._forward[0], self._y + self._forward[1])
+    
+    #################################################################################################################################################
+    
+    
+
+    #################################################################################################################################################
+    # OUTPUT BEHAVIORS
+    #################################################################################################################################################
     
     # All the movement functions we could ever need.
     def move_left(self) -> bool:
@@ -77,3 +119,5 @@ class LittleGuy():
                          self.move_up_left, self.move_up_right, self.move_down_left, self.move_down,
                          self.move_forward])
         return move()
+    
+    #################################################################################################################################################
