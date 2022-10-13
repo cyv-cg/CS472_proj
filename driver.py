@@ -47,7 +47,7 @@ john.brain = Network(
         Connection(6, 5, 0.8)
     ]
 )
-john.place_radomly()
+john.place_randomly()
 
 for t in range(10):
     world.age = t

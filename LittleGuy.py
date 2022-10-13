@@ -19,7 +19,7 @@ class LittleGuy():
         self._world = world
         self.brain = None
     
-    def place_radomly(self) -> None:
+    def place_randomly(self) -> None:
         # Randomly distribute this individual within the world.
         # Start with a set of coordinates that are out of bounds.
         x : int = -1
