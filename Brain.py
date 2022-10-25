@@ -5,6 +5,7 @@ class Node:
     transformation = lambda x: x
     
     _activation : float = 0
+    _activated : bool = False
     
     # -1 = undefined
     # 0 = input
@@ -42,6 +43,7 @@ class Network:
     def reset_activations(self):
         for n in self.nodes:
             n._activation = 0
+            n._activated = False
     
     # I don't know how this works but it does.
     # It's some kind of janky reverse DFS-style algorithm.
@@ -72,14 +74,9 @@ class Network:
         if len(inputs) > 0:
             activation_sum : float = 0
             for c in inputs:
-                # No cycles.
-                # Cycles bad.
-                if c.input == c.output:
-                    continue
                 # Recursively evaluate input nodes and add together all their activations.
                 # Avoid evaluating nodes more than once.
-                # Technically, a node can have 0 activation and still have been evaluated, but it's not a huge deal.
-                if self.nodes[c.input]._activation != 0:
+                if self.nodes[c.input]._activated:
                     activation_sum += self.nodes[c.input]._activation * c.weight
                 else:
                     activation_sum += self._eval_node(self.nodes[c.input]) * c.weight
