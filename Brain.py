@@ -103,10 +103,8 @@ class Network:
         
         # input validation
         # input node has to be an input node or an internal node
-        if input != 0 and input != 2:
-            return False
         # output node has to be an internal node or an output node
-        elif output != 1 and output != 2:
+        if (input != 0 and input != 2) or (output != 1 and output != 2):
             return False
         else:
             # create a new connection, not strictly necessary, but it makes the code more readable
