@@ -97,21 +97,21 @@ class Network:
             node._activation = node.transformation()
         return node._activation
 
-        # takes the info needed to make a connections
-        # and adds the connection to the Network's connections list
-        def add_connection(self, input : int, output : int, weight : float) -> bool:
-            
-            # input validation
-            # input node has to be an input node or an internal node
-            if input != 0 and input != 2:
-                return False
-            # output node has to be an internal node or an output node
-            elif output != 1 and output != 2:
-                return False
-            else:
-                # create a new connection, not strictly necessary, but it makes the code more readable
-                new_connection = Connection(input, output, weight)
-                # add the new connection to the Network's connection list
-                self.connections.append(new_connection)
+    # takes the info needed to make a connections
+    # and adds the connection to the Network's connections list
+    def add_connection(self, input : int, output : int, weight : float) -> bool:
+        
+        # input validation
+        # input node has to be an input node or an internal node
+        if input != 0 and input != 2:
+            return False
+        # output node has to be an internal node or an output node
+        elif output != 1 and output != 2:
+            return False
+        else:
+            # create a new connection, not strictly necessary, but it makes the code more readable
+            new_connection = Connection(input, output, weight)
+            # add the new connection to the Network's connection list
+            self.connections.append(new_connection)
 
-                return True
+            return True
