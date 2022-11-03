@@ -1,6 +1,7 @@
 from World import World
 from Brain import *
 import random as r
+import behaviors
 
 # Class that represents the individuals populating the world.
 class LittleGuy():
@@ -14,6 +15,11 @@ class LittleGuy():
     
     # Forward vector; the last direction that this individual moved in.
     _forward : tuple[int, int] = (0, 0)
+    
+    _A : float = 1
+    _B : float = 1
+    _C : float = 1
+    _D : float = 1
     
     def __init__(self, world : World) -> None:
         self._world = world
@@ -68,56 +74,34 @@ class LittleGuy():
         
         return True
     
-    
-    #################################################################################################################################################
-    # INPUT BEHAVIORS
-    #################################################################################################################################################
-    
-    def pos_x(self) -> float:
-        return self._x / self._world.width
-    def pos_y(self) -> float:
-        return self._y / self._world.height
-    
-    def rand(self) -> float:
-        return r.random() * 2 - 1
-    
-    def check_time(self) -> int:
-        return self._world.age
-    
-    def check_forward(self) -> int:
-        return self._world.check_cell(self._x + self._forward[0], self._y + self._forward[1])
-    
-    #################################################################################################################################################
-    
-    
-
-    #################################################################################################################################################
-    # OUTPUT BEHAVIORS
-    #################################################################################################################################################
-    
-    # All the movement functions we could ever need.
-    def move_left(self) -> bool:
-        return self.set_coordinates(self._x - 1, self._y)
-    def move_right(self) -> bool:
-        return self.set_coordinates(self._x + 1, self._y)
-    def move_up(self) -> bool:
-        return self.set_coordinates(self._x, self._y - 1)
-    def move_down(self) -> bool:
-        return self.set_coordinates(self._x, self._y + 1)
-    def move_up_left(self) -> bool:
-        return self.set_coordinates(self._x - 1, self._y - 1)
-    def move_up_right(self) -> bool:
-        return self.set_coordinates(self._x + 1, self._y - 1)
-    def move_down_left(self) -> bool:
-        return self.set_coordinates(self._x - 1, self._y + 1)
-    def move_down_right(self) -> bool:
-        return self.set_coordinates(self._x + 1, self._y + 1)
-    def move_forward(self) -> bool:
-        return self.set_coordinates(self._x + self._forward[0], self._y + self._forward[1])
-    def move_random(self) -> bool:
-        move = r.choice([self.move_left, self.move_right, self.move_up, self.move_down,
-                         self.move_up_left, self.move_up_right, self.move_down_left, self.move_down,
-                         self.move_forward])
-        return move()
-    
-    #################################################################################################################################################
+    def randomize(self):
+        self.place_randomly()		
+  
+        self._A = 10 * (2 * r.random() - 1)
+        self._B = 10 * (2 * r.random() - 1)
+        self._C = 10 * (2 * r.random() - 1)
+        self._D = 10 * (2 * r.random() - 1)
+        
+        for _ in range(self.brain.MAX_INTERNAL_NEURONS):
+            if r.random() <= 0.1:
+                self.brain.nodes.append(
+                    Node(
+                        type=2,
+                        transformation_function=r.choice([
+                            behaviors.sigmoid,
+                            behaviors.step,
+                            behaviors.abs,
+                            behaviors.piece,
+                            behaviors.parabola
+                        ])
+                    )
+                )
+        for _ in range(self.brain.MAX_CONNECTIONS):
+            if r.random() <= 0.1:
+                self.brain.connections.append(
+                    Connection(
+                        input=r.choice(range(len(self.brain.nodes))), 
+                        output=r.choice(range(len(self.brain.nodes))),
+                        weight=10 * (2 * r.random() - 1)
+                    )
+                )
