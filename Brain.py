@@ -165,6 +165,6 @@ class Network:
                 c.weight += r.random() - 1
             
             if r.random() < mutation_chance:
-                c.input = (c.input + (r.choice([-1, 1]))) % len(self.nodes)
+                c.input = r.choice(range(len(self.nodes))) #(c.input + (r.choice([-1, 1]))) % len(self.nodes)
             if r.random() < mutation_chance:
-                c.output = (c.output + (r.choice([-1, 1]))) % len(self.nodes)
+                c.output = r.choice(range(len(self.nodes))) #(c.output + (r.choice([-1, 1]))) % len(self.nodes)
