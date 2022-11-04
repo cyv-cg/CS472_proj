@@ -42,11 +42,18 @@ class World():
                 print(self.matrix[x, y], end=' ')
             print()
     
-    def kill(self, x_start : int, y_start : int, x_end : int, y_end : int) -> int:
+    def kill(self, population, x_start : int, y_start : int, x_end : int, y_end : int) -> int:
         num_killed : int = 0
         for x in range(x_start, x_end):
             for y in range(y_start, y_end):
                 if self.matrix[x, y] == self.ids['agent']:
+                    # increase the number of killed
                     num_killed += 1
+                    # find the guy at this location in the population
+                    # there is probably a better way to do this, but this is the first way that I though of
+                    guy = [guy for guy in population if guy._x == x and guy._y == y][0]
+                    # remove the guy
+                    population.remove(guy)
+                    # set the spot in the world to be empty
                     self.matrix[x, y] = self.ids['empty']
         return num_killed

@@ -66,7 +66,7 @@ STOCK_BRAIN = Network(
 world : World = World(width=255, height=255)
 
 pop_size = 1000
-num_generations : int = 10
+num_generations : int = 50
 generation_duration : int = 300
 
 population : list[LittleGuy] = []
@@ -93,5 +93,6 @@ for g in range(num_generations):
             transformation(p, activation)
         
     # Kill everything in the left half of the world.
-    killed : int = world.kill(0, 0, world.width // 2, world.height)
+    # also removes the guys that have died from the population
+    killed : int = world.kill(population, 0, 0, world.width // 2, world.height)
     print(f'{100 * round(1 - (killed / pop_size), 4)}% survival')
