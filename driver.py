@@ -4,30 +4,34 @@ from behaviors import *
 from Brain import *
 import random as r
 import copy
+import sys
 
 def repopulate(current_pop : list[LittleGuy]) -> list[LittleGuy]:
     population : list[LittleGuy] = []
     while len(population) < pop_size:
         # Randomly choose 2 parents.
         p1 = r.choice(current_pop)
-        p2 = r.choice(current_pop)
+        #p2 = r.choice(current_pop)
         
-        child = LittleGuy(world)
-        child.place_randomly()
-        population.append(child)
-        
+        #child = LittleGuy(world)
+        #child.place_randomly()
+        #population.append(child)
+        p1.place_randomly()
+        population.append(p1)
+
         # Randomly choose attributes from each parent.
         # Inherit brain structure from p1.      
-        child.brain = copy.deepcopy(p1.brain)
+        #child.brain = copy.deepcopy(p1.brain)
         # Inherit other properties from p2.
-        child._A = p2._A
-        child._B = p2._B
-        child._C = p2._C
-        child._D = p2._D
+        #child._A = p2._A
+        #child._B = p2._B
+        #child._C = p2._C
+        #child._D = p2._D
         
         # Mutate the child after inheriting.
-        child.brain.mutate()
-    
+        #child.brain.mutate()
+        p1.brain.mutate()
+
     return population
 
 STOCK_BRAIN = Network(
@@ -65,15 +69,16 @@ STOCK_BRAIN = Network(
 
 world : World = World(width=255, height=255)
 
-pop_size = 1000
-num_generations : int = 50
-generation_duration : int = 300
+
+pop_size = 100 if len(sys.argv) < 2 else int(sys.argv[1])
+num_generations : int = 20 if len(sys.argv) < 3 else int(sys.argv[2])
+generation_duration : int = 100 if len(sys.argv) < 4 else int(sys.argv[3])
 
 population : list[LittleGuy] = []
 for g in range(num_generations):
     print(f'--------------')
     print(f'generation {str(g).zfill(3)}')
-    
+
     if g == 0:
         # Place all the individuals in the population.
         for _ in range(pop_size):
@@ -84,6 +89,9 @@ for g in range(num_generations):
     else:
         population = repopulate(population)
     
+    if len(population) == 0:
+        break
+
     for t in range(generation_duration):
         world.age = t / (generation_duration - 1)
         
@@ -95,4 +103,4 @@ for g in range(num_generations):
     # Kill everything in the left half of the world.
     # also removes the guys that have died from the population
     killed : int = world.kill(population, 0, 0, world.width // 2, world.height)
-    print(f'{100 * round(1 - (killed / pop_size), 4)}% survival')
+    print(f'{int(10000 * (1 - (killed / pop_size))) / 100}% survival')
