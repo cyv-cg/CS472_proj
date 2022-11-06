@@ -41,6 +41,14 @@ class World():
             for x in range(self.width):
                 print(self.matrix[x, y], end=' ')
             print()
+    def matrix_to_str(self) -> str:
+        string : str = ''
+        for y in range(self.height):
+            for x in range(self.width):
+                string += str(self.matrix[x, y])
+            if y != self.height - 1:
+                string += ' '
+        return string
     
     def kill(self, population, x_start : int, y_start : int, x_end : int, y_end : int) -> int:
         num_killed : int = 0

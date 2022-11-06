@@ -38,7 +38,6 @@ class LittleGuy():
             y = r.randint(0, self._world.height - 1)
         # Set the individual to that coordinate and update the matrix accordingly.
         self.set_coordinates(x, y)
-        self._world.matrix[x, y] = self._world.ids['agent']
         
         self._forward = (r.choice([-1, 0, 1]), r.choice([-1, 0, 1]))
         if self._forward == (0, 0):

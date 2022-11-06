@@ -1,38 +1,58 @@
 from LittleGuy import LittleGuy
 from World import World
+
 from behaviors import *
 from Brain import *
+
 import random as r
+import numpy as np
+
+import uuid
+
 import copy
 import sys
 
+class WorldState:
+    generations : list[list[np.array(int)]] = []
+
 def repopulate(current_pop : list[LittleGuy]) -> list[LittleGuy]:
+    for x in range(world.width):
+        for y in range(world.height):
+            if world.matrix[x, y] == world.ids['agent']:
+                world.matrix[x, y] = world.ids['empty']
+    
     population : list[LittleGuy] = []
     while len(population) < pop_size:
-        # Randomly choose 2 parents.
-        p1 = r.choice(current_pop)
-        #p2 = r.choice(current_pop)
+        # Randomly choose an individual to clone.
+        p = copy.copy(r.choice(current_pop))
         
-        #child = LittleGuy(world)
-        #child.place_randomly()
-        #population.append(child)
-        p1.place_randomly()
-        population.append(p1)
+        # Place individual in the world.
+        p._x = -1
+        p._y = -1
+        p.place_randomly()
+        population.append(p)
 
-        # Randomly choose attributes from each parent.
-        # Inherit brain structure from p1.      
-        #child.brain = copy.deepcopy(p1.brain)
-        # Inherit other properties from p2.
-        #child._A = p2._A
-        #child._B = p2._B
-        #child._C = p2._C
-        #child._D = p2._D
-        
-        # Mutate the child after inheriting.
-        #child.brain.mutate()
-        p1.brain.mutate()
+        # Mutate the neural network.
+        p.brain.mutate()
 
     return population
+
+# Each row in the world is separated by a space
+# Each timestep is separated by a .
+# Each generation is separated by a new line
+def export(world_states : list[list[str]]) -> None:
+    string : str = ''
+    for gen in range(len(world_states)):
+        for step in range(len(world_states[gen])):
+            string += world_states[gen][step]
+            if step != len(world_states[gen]) - 1:
+                string += '.'
+        if gen != len(world_states) - 1:
+            string += '\n'
+        
+    f = open(f"{uuid.uuid4()}.dat", "w")
+    f.write(string)
+    f.close()
 
 STOCK_BRAIN = Network(
     nodes=[
@@ -69,15 +89,18 @@ STOCK_BRAIN = Network(
 
 world : World = World(width=255, height=255)
 
-
-pop_size = 100 if len(sys.argv) < 2 else int(sys.argv[1])
+pop_size : int = 100 if len(sys.argv) < 2 else int(sys.argv[1])
 num_generations : int = 20 if len(sys.argv) < 3 else int(sys.argv[2])
 generation_duration : int = 100 if len(sys.argv) < 4 else int(sys.argv[3])
+
+world_states : list[list[str]] = []
 
 population : list[LittleGuy] = []
 for g in range(num_generations):
     print(f'--------------')
     print(f'generation {str(g).zfill(3)}')
+    
+    gen_state : list[str] = []
 
     if g == 0:
         # Place all the individuals in the population.
@@ -93,6 +116,9 @@ for g in range(num_generations):
         break
 
     for t in range(generation_duration):
+        # Save a snapshot of the world in the moment.
+        gen_state.append(world.matrix_to_str())
+        
         world.age = t / (generation_duration - 1)
         
         # Make every individual choose its next action.
@@ -104,3 +130,6 @@ for g in range(num_generations):
     # also removes the guys that have died from the population
     killed : int = world.kill(population, 0, 0, world.width // 2, world.height)
     print(f'{int(10000 * (1 - (killed / pop_size))) / 100}% survival')
+    world_states.append(gen_state)
+
+export(world_states)
