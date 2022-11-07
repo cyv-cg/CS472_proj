@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 from LittleGuy import LittleGuy
 from World import World
 
@@ -40,7 +42,7 @@ def repopulate(current_pop : list[LittleGuy]) -> list[LittleGuy]:
 # Each row in the world is separated by a space
 # Each timestep is separated by a .
 # Each generation is separated by a new line
-def export(world_states : list[list[str]]) -> None:
+def export(world_states : list[list[str]], file_name : str) -> None:
     string : str = ''
     for gen in range(len(world_states)):
         for step in range(len(world_states[gen])):
@@ -50,7 +52,7 @@ def export(world_states : list[list[str]]) -> None:
         if gen != len(world_states) - 1:
             string += '\n'
         
-    f = open(f"{uuid.uuid4()}.dat", "w")
+    f = open(f"{file_name}.dat", "w")
     f.write(string)
     f.close()
 
@@ -94,6 +96,7 @@ num_generations : int = 20 if len(sys.argv) < 3 else int(sys.argv[2])
 generation_duration : int = 100 if len(sys.argv) < 4 else int(sys.argv[3])
 
 world_states : list[list[str]] = []
+survival_rates : list[float] = []
 
 population : list[LittleGuy] = []
 for g in range(num_generations):
@@ -129,7 +132,21 @@ for g in range(num_generations):
     # Kill everything in the left half of the world.
     # also removes the guys that have died from the population
     killed : int = world.kill(population, 0, 0, world.width // 2, world.height)
-    print(f'{int(10000 * (1 - (killed / pop_size))) / 100}% survival')
+    survival_rates.append(1 - (killed / pop_size))
+    print(f'{int(10000 * survival_rates[len(survival_rates) - 1]) / 100}% survival')
     world_states.append(gen_state)
 
-export(world_states)
+file = uuid.uuid4()
+
+export(world_states, file)
+
+x = range(num_generations)
+fig, ax = plt.subplots()
+
+ax.plot(x, survival_rates, linewidth=2, label='survival')
+ax.set(xlabel='generation', ylabel='survival', title='Survival rates over time', xlim=(0, num_generations - 1), ylim=(0, 1.1), xticks=np.arange(0, num_generations, 1), yticks=np.arange(0, 1.1, 0.1))
+
+ax.grid()
+fig.legend()
+
+fig.savefig(f'{file}.png')
