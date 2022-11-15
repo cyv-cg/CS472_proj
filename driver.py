@@ -77,29 +77,34 @@ STOCK_BRAIN = Network(
         Node(1, move_forward),
         Node(1, move_reverse),
         Node(1, move_random),
-        Node(1, set_A),
-        Node(1, set_B),
-        Node(1, set_C),
-        Node(1, set_D)
+        #Node(1, set_A),
+        #Node(1, set_B),
+        #Node(1, set_C),
+        #Node(1, set_D)
     ],
     connections=[
         
     ],
     max_conn=4,
-    max_internal=4
+    max_internal=0
 )
 
-world : World = World(width=255, height=255)
+world : World = World(width=255 if len(sys.argv) < 5 else int(sys.argv[4]), height=255 if len(sys.argv) < 5 else int(sys.argv[4]))
 
 pop_size : int = 100 if len(sys.argv) < 2 else int(sys.argv[1])
 num_generations : int = 20 if len(sys.argv) < 3 else int(sys.argv[2])
 generation_duration : int = 100 if len(sys.argv) < 4 else int(sys.argv[3])
 
 world_states : list[list[str]] = []
-survival_rates : list[float] = []
+survival_rates : list[float] = [0] * num_generations
+
+presence_of_move_right : list[float] = [0] * num_generations
 
 population : list[LittleGuy] = []
 for g in range(num_generations):
+    if len(population) == 0 and g > 0:
+        break
+
     print(f'--------------')
     print(f'generation {str(g).zfill(3)}')
     
@@ -115,9 +120,6 @@ for g in range(num_generations):
     else:
         population = repopulate(population)
     
-    if len(population) == 0:
-        break
-
     for t in range(generation_duration):
         # Save a snapshot of the world in the moment.
         gen_state.append(world.matrix_to_str())
@@ -132,9 +134,20 @@ for g in range(num_generations):
     # Kill everything in the left half of the world.
     # also removes the guys that have died from the population
     killed : int = world.kill(population, 0, 0, world.width // 2, world.height)
-    survival_rates.append(1 - (killed / pop_size))
-    print(f'{int(10000 * survival_rates[len(survival_rates) - 1]) / 100}% survival')
+    survival_rates[g] = 1 - (killed / pop_size)
+    print(f'{int(10000 * survival_rates[g]) / 100}% survival')
     world_states.append(gen_state)
+
+    if len(population) == 0:
+        break
+
+    sum = 0
+    for p in population:
+        for c in p.brain.connections:
+            if c.output == 7:
+                sum += 1
+                break
+    presence_of_move_right[g] = sum / len(population)
 
 file = uuid.uuid4()
 
@@ -143,10 +156,12 @@ export(world_states, file)
 x = range(num_generations)
 fig, ax = plt.subplots()
 
+ax.plot(x, presence_of_move_right, linewidth=2, label='prominance of move_right gene', linestyle='dotted')
 ax.plot(x, survival_rates, linewidth=2, label='survival')
-ax.set(xlabel='generation', ylabel='survival', title='Survival rates over time', xlim=(0, num_generations - 1), ylim=(0, 1.1), xticks=np.arange(0, num_generations, 1), yticks=np.arange(0, 1.1, 0.1))
+ax.set(xlabel='generation', ylabel='survival', title='Survival rates over time', xlim=(0, num_generations - 1), ylim=(0, 1.1), xticks=np.arange(0, num_generations, num_generations // 10), yticks=np.arange(0, 1.1, 0.1))
 
 ax.grid()
 fig.legend()
 
 fig.savefig(f'{file}.png')
+print(file)

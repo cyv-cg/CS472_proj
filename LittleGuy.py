@@ -96,11 +96,11 @@ class LittleGuy():
                     )
                 )
         for _ in range(self.brain.MAX_CONNECTIONS):
-            if r.random() <= 0.1:
-                self.brain.connections.append(
-                    Connection(
-                        input=r.choice(range(len(self.brain.nodes))), 
-                        output=r.choice(range(len(self.brain.nodes))),
-                        weight=10 * (2 * r.random() - 1)
-                    )
+            #if r.random() <= 0.1:
+            self.brain.connections.append(
+                Connection(
+                    input=r.choice(range(len(self.brain.nodes))), 
+                    output=r.choice(range(len(self.brain.nodes))),
+                    weight=10 * (2 * r.random() - 1)
                 )
+            )
