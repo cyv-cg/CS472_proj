@@ -149,16 +149,16 @@ class Network:
                     )
                 )
             
-        #if r.random() < mutation_chance and len(self.connections) > 0:
-            #self.connections.remove(r.choice(self.connections))
-        #if r.random() < mutation_chance and len(self.connections) < self.MAX_CONNECTIONS:
-            #self.connections.append(
-                    #Connection(
-                        #input=r.choice(range(len(self.nodes))), 
-                        #output=r.choice(range(len(self.nodes))),
-                        #weight=10 * (2 * r.random() - 1)
-                    #)
-                #)
+        if r.random() < mutation_chance and len(self.connections) > 0:
+            self.connections.remove(r.choice(self.connections))
+        if r.random() < mutation_chance and len(self.connections) < self.MAX_CONNECTIONS:
+            self.connections.append(
+                    Connection(
+                        input=r.choice(range(len(self.nodes))), 
+                        output=r.choice(range(len(self.nodes))),
+                        weight=10 * (2 * r.random() - 1)
+                    )
+                )
 
         for c in self.connections:
             if r.random() < mutation_chance:

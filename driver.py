@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 
 from LittleGuy import LittleGuy
 from World import World
+from visual import AnimWriter
 
 from behaviors import *
 from Brain import *
@@ -26,7 +27,8 @@ def repopulate(current_pop : list[LittleGuy]) -> list[LittleGuy]:
     population : list[LittleGuy] = []
     while len(population) < pop_size:
         # Randomly choose an individual to clone.
-        p = copy.copy(r.choice(current_pop))
+        p = LittleGuy(world)
+        p.brain = copy.deepcopy(r.choice(current_pop).brain)
         
         # Place individual in the world.
         p._x = -1
@@ -77,23 +79,23 @@ STOCK_BRAIN = Network(
         Node(1, move_forward),
         Node(1, move_reverse),
         Node(1, move_random),
-        #Node(1, set_A),
-        #Node(1, set_B),
-        #Node(1, set_C),
-        #Node(1, set_D)
+        Node(1, set_A),
+        Node(1, set_B),
+        Node(1, set_C),
+        Node(1, set_D)
     ],
     connections=[
         
     ],
     max_conn=4,
-    max_internal=0
+    max_internal=4
 )
 
 world : World = World(width=255 if len(sys.argv) < 5 else int(sys.argv[4]), height=255 if len(sys.argv) < 5 else int(sys.argv[4]))
 
-pop_size : int = 100 if len(sys.argv) < 2 else int(sys.argv[1])
-num_generations : int = 20 if len(sys.argv) < 3 else int(sys.argv[2])
-generation_duration : int = 100 if len(sys.argv) < 4 else int(sys.argv[3])
+pop_size : int = 1000 if len(sys.argv) < 2 else int(sys.argv[1])
+num_generations : int = 100 if len(sys.argv) < 3 else int(sys.argv[2])
+generation_duration : int = 150 if len(sys.argv) < 4 else int(sys.argv[3])
 
 world_states : list[list[str]] = []
 survival_rates : list[float] = [0] * num_generations
@@ -165,3 +167,4 @@ fig.legend()
 
 fig.savefig(f'{file}.png')
 print(file)
+AnimWriter.Visualize(f'{file}.dat')
