@@ -1,5 +1,4 @@
 import random as r
-from sys import intern
 import behaviors
 
 class Node:

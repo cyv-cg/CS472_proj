@@ -6,8 +6,9 @@ from os.path import exists
 class AnimWriter:
     def Visualize(file : str) ->None:
         makeMp4 : bool = False
-        if(exists('D:\\FFMPEG\\ffmpeg-2022-11-03-git-5ccd4d3060-full_build\\bin\\ffmpeg.exe')):
-            plot.rcParams['animation.ffmpeg_path'] = 'D:\\FFMPEG\\ffmpeg-2022-11-03-git-5ccd4d3060-full_build\\bin\\ffmpeg.exe'
+        ffmpeg_path : str = 'C:path\\to\\ffmpeg.exe'
+        if(exists(ffmpeg_path)):
+            plot.rcParams['animation.ffmpeg_path'] = ffmpeg_path
             makeMp4 = True
         txt = open(f'{file}', 'r')
 

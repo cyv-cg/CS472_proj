@@ -93,9 +93,9 @@ STOCK_BRAIN = Network(
 
 world : World = World(width=255 if len(sys.argv) < 5 else int(sys.argv[4]), height=255 if len(sys.argv) < 5 else int(sys.argv[4]))
 
-pop_size : int = 10 if len(sys.argv) < 2 else int(sys.argv[1])
-num_generations : int = 10 if len(sys.argv) < 3 else int(sys.argv[2])
-generation_duration : int = 50 if len(sys.argv) < 4 else int(sys.argv[3])
+pop_size : int = 1000 if len(sys.argv) < 2 else int(sys.argv[1])
+num_generations : int = 250 if len(sys.argv) < 3 else int(sys.argv[2])
+generation_duration : int = 300 if len(sys.argv) < 4 else int(sys.argv[3])
 
 world_states : list[list[str]] = []
 survival_rates : list[float] = [0] * num_generations
