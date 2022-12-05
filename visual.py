@@ -2,11 +2,12 @@ import matplotlib.pyplot as plot
 import matplotlib.animation as ani
 from matplotlib.animation import PillowWriter as PW
 from matplotlib.animation import FFMpegWriter as FW
-
+from os.path import exists
 class AnimWriter:
     def Visualize(file : str) ->None:
-        
-        plot.rcParams['animation.ffmpeg_path'] = 'D:\\FFMPEG\\ffmpeg-2022-11-03-git-5ccd4d3060-full_build\\bin\\ffmpeg.exe'
+        if(exists('D:\\FFMPEG\\ffmpeg-2022-11-03-git-5ccd4d3060-full_build\\bin\\ffmpeg.exe')):
+            plot.rcParams['animation.ffmpeg_path'] = 'D:\\FFMPEG\\ffmpeg-2022-11-03-git-5ccd4d3060-full_build\\bin\\ffmpeg.exe'
+            makeMp4 = True
         txt = open(f'{file}', 'r')
 
         data = txt.readlines()
@@ -19,7 +20,7 @@ class AnimWriter:
 
         metadata = dict(title='LITTLE GUYS')
         writer = FW(fps=30, metadata=metadata )
-        with writer.saving(fig,f'{file}.mp4',100):
+        with writer.saving(fig,f'{file}.mp4' if makeMp4 else f'{file}.gif' ,100):
             for row in range(len(data)):
                 plot.title(f'gen {row}')
                 for g in range(len(data[row].split('.'))):
